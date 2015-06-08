@@ -1,10 +1,18 @@
 {%extends 'base.html' %}
 {%block main%}
+<style>
+.message {
+	margin:2px;
+	padding:10px;
+	background-color:#f8f8f8;
+	border:1px solid #e8e8e8;
+}
+</style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 <script>
-var friends = "gicu";
+var chatid = {{chat_room.chat_id}};
 function LoadJson(){ //start function
-	$.getJSON( "/messages/message/friend="+friends, function( data ) {
+	$.getJSON( "/message/"+chatid, function( data ) {
 		var items = [];
 		var lastitem = parseInt($("#showdata div:last-child").attr("id"));
 		if (lastitem !== lastitem) {
@@ -33,7 +41,7 @@ function LoadJson(){ //start function
 function postAjax(){
     $.ajax({
         type:"POST",
-        url:"/messages/friend="+friends,
+        url:"/message/"+chatid,
         data: {
                csrfmiddlewaretoken : "{{csrf_token}}",
                text: $('#send').val() // from form
@@ -63,9 +71,9 @@ $(document).ready(function(){
 					</div>
 					<div class="panel panel-body" style="height:17em;overflow:auto;padding:10px;">
 						<table class="table">
-							{%for item in senders %}
+							{%for item in chat_room.usernames %}
 							<h4 class="text-center" style="border-bottom: 2px dotted #ECF0F1;margin-top:30px;">
-								<a href="/messages/friend={{item}}">{{item}}</a>
+								<a>{{item}}</a>
 							</h4>
 							{%endfor%}
 							<p>{{length.message}}
@@ -76,14 +84,11 @@ $(document).ready(function(){
 			<div class="col-md-9">
 				<div class="panel panel-info" style="height:24.5em;position:relative;">
 					<div class="panel-heading text-center">
-						<h4>Welcome to {{channel}}</h4>
+						<h4>Welcome to {{chat_room.chat_name}}</h4>
 					</div>
 					<div id="bottom" class="panel-body" style="height:17em;overflow:auto;">
-						{%for item in messages %}
-						<p>{{messages.username}}
-							<div id="showdata">
-							</div>
-						{%endfor%}
+						<div id="showdata">
+						</div>
 						<form onSubmit="return false;" enctype="multipart/form-data">
 						{%csrf_token%}
 							<div class="input-group" style="position:absolute;bottom:0;left:0px;">

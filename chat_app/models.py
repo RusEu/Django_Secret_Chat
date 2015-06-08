@@ -8,5 +8,7 @@ class ChatRoom(models.Model):
 	message = models.TextField(blank=True,null=True)
 	time = models.DateTimeField(auto_now=True)
 	online_users = models.TextField(blank=True,null=True)
+	def usernames(self):
+		return self.online_users.split(',')
 	def __unicode__(self):
-		return  self.chat_id + " / " +self.username + " / " + str(self.time)  
+		return  str(self.chat_id) + " / " + str(self.time)
