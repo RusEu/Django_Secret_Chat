@@ -67,7 +67,7 @@ $(document).ready(function(){
 			<div class="col-md-3">
 				<div class="panel panel-info">
 					<div class="panel panel-heading text-center">
-						<h4>Users Online</h4>
+						<h4>{{chat_room.usernames | length}} Users Online</h4>
 					</div>
 					<div class="panel panel-body" style="height:17em;overflow:auto;padding:10px;">
 						<table class="table">
@@ -76,23 +76,38 @@ $(document).ready(function(){
 								<a>{{item}}</a>
 							</h4>
 							{%endfor%}
-							<p>{{length.message}}
 						</table>
+					</div>
+					<div class"panel panel-footer">
+						<form role="search">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="Change Username">
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button">Go!</button>
+								</span>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-9">
-				<div class="panel panel-info" style="height:24.5em;position:relative;">
+				<div class="panel panel-info" style="height:28em;position:relative;">
 					<div class="panel-heading text-center">
-						<h4>Welcome to {{chat_room.chat_name}}</h4>
+						<h4>Welcome to {{chat_room.chat_name}}
+							<strong class="pull-right">
+        						{% ifequal chat_room.usernames|length 2 %}
+   									<a href="/delete/{{chat_room.chat_id}}">DeleteChat</a>
+								{%endifequal%}
+							</strong>
+						</h4>
 					</div>
-					<div id="bottom" class="panel-body" style="height:17em;overflow:auto;">
+					<div id="bottom" class="panel-body" style="height:19em;overflow:auto;">
 						<div id="showdata">
 						</div>
 						<form onSubmit="return false;" enctype="multipart/form-data">
 						{%csrf_token%}
 							<div class="input-group" style="position:absolute;bottom:0;left:0px;">
-						  		<input type="text" name="send" id="send" class="form-control" placeholder="Enter Message">
+						  		<input type="text" autocomplete="off" name="send" id="send" class="form-control" placeholder="Enter Message">
 						  		<span class="input-group-btn">
 						    		<button class="btn btn-default" onclick="postAjax()">Send</button>
 						  		</span>

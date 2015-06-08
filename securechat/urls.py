@@ -20,7 +20,8 @@ from chat_app import views
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
     url(r'^add_chat/$', views.add_chat, name='add_chat'),
-	url(ur'^chat/(?P<chatid>.*)/$', views.chat, name='chat'),
+    url(ur'^chat/(?P<chatid>.*)/$', views.chat, name='chat'),
+    url(ur'^delete/(?P<chatid>.*)/$', views.delete_chat, name='delete'),
     url(r'^message/(?P<chatid>.*)$', views.message, name='message'),
     url(r'^admin/', include(admin.site.urls)),
 ]
