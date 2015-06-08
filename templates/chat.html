@@ -1,0 +1,101 @@
+{%extends 'base.html' %}
+{%block main%}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<script>
+var friends = "gicu";
+function LoadJson(){ //start function
+	$.getJSON( "/messages/message/friend="+friends, function( data ) {
+		var items = [];
+		var lastitem = parseInt($("#showdata div:last-child").attr("id"));
+		if (lastitem !== lastitem) {
+			var lastitem = 0;
+		}
+		$.each( data, function( key, val ) {
+			if (val.msg) {
+				var str = val.msg;
+			    var search = str.search(" ")
+			}
+			if ( key > lastitem ) {
+		    	if ( (search == -1) || (search > 30) ) {
+				    newVal = str.replace(/(.{25})/g, "$1\n");
+					$("#showdata").append("<div class='row message' id='" + key + "'>"+"<p><span class='col-md-3 col-xs-4'>"+val.user+"</span>" + "<span class='col-md-7 col-xs-8'>" + newVal + "</span><small class='col-md-2 col-xs-12 text-right'>"+ val.time + "</small></p></div>");
+				}
+				else {
+					$("#showdata").append("<div class='row message' id='" + key + "'>"+"<p><span class='col-md-3 col-xs-4'>"+val.user+"</span>" + "<span class='col-md-7 col-xs-8'>" + val.msg + "</span><small class='col-md-2 col-xs-12 text-right'>"+ val.time + "</small></p></div>");
+				}
+				$('#bottom').scrollTop($('#bottom').prop("scrollHeight"));
+				$(window).scrollTop($(document).height());
+			};
+		});
+	});
+    setTimeout(LoadJson, 5000);
+};
+function postAjax(){
+    $.ajax({
+        type:"POST",
+        url:"/messages/friend="+friends,
+        data: {
+               csrfmiddlewaretoken : "{{csrf_token}}",
+               text: $('#send').val() // from form
+               },
+        success: function(){
+            LoadJson();
+            $('#send').val('')
+        }
+    });
+    return false; //<---- move it here
+}
+$(document).ready(function(){
+	$('#bottom').scrollTop($('#bottom').prop("scrollHeight"));
+	$(window).scrollTop($(document).height());
+	LoadJson();
+	$(window).bind('beforeunload', function() {
+    console.log("lalala")
+	});
+}); 
+</script>
+	<div class="container" style="margin-top:5em;">
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-info">
+					<div class="panel panel-heading text-center">
+						<h4>Users Online</h4>
+					</div>
+					<div class="panel panel-body" style="height:17em;overflow:auto;padding:10px;">
+						<table class="table">
+							{%for item in senders %}
+							<h4 class="text-center" style="border-bottom: 2px dotted #ECF0F1;margin-top:30px;">
+								<a href="/messages/friend={{item}}">{{item}}</a>
+							</h4>
+							{%endfor%}
+							<p>{{length.message}}
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="panel panel-info" style="height:24.5em;position:relative;">
+					<div class="panel-heading text-center">
+						<h4>Welcome to {{channel}}</h4>
+					</div>
+					<div id="bottom" class="panel-body" style="height:17em;overflow:auto;">
+						{%for item in messages %}
+						<p>{{messages.username}}
+							<div id="showdata">
+							</div>
+						{%endfor%}
+						<form onSubmit="return false;" enctype="multipart/form-data">
+						{%csrf_token%}
+							<div class="input-group" style="position:absolute;bottom:0;left:0px;">
+						  		<input type="text" name="send" id="send" class="form-control" placeholder="Enter Message">
+						  		<span class="input-group-btn">
+						    		<button class="btn btn-default" onclick="postAjax()">Send</button>
+						  		</span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{%endblock%}

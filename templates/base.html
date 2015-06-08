@@ -1,0 +1,67 @@
+<html>
+<head>
+<title>Welcome To PlaceFlowers</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<style>
+	.jumbotron * {
+		font-size: 180%;
+	}
+	body {
+		background-image: url("/static/img/bg.jpeg") !important;
+	}
+	.jumbotron {
+		background-color: transparent !important;
+	}
+	.grey {
+		background-color: #f8f8f8;
+	}
+	.red {
+		background-color: red;
+	}
+	.donate {
+		display:none;
+	}
+	.contact {
+		display:none;
+	}
+	@media (max-width: 399px) { 
+	    #chat {
+	    	font-size:10px;
+	    }
+	}
+
+</style>
+</head>
+<body>
+	<nav class="nav navbar-default">
+		<a href="/"><li class="navbar-brand">SecureChat</li></a>
+		<ul class="menu nav navbar-nav pull-right" style="display:block;">
+        	<li id="donate"><a href="#donate">Donate<span class="donate">bidstopper@gmail.com</span></a></li>
+        	<li id="contact"><a href="#contact">Contact<span class="contact">bidstopper@gmail.com</span></a></li>
+		</ul>
+	</nav>
+	{%block main%}
+
+	{%endblock%}
+<script>
+	$('#donate').click(function(){
+		$('#donate').addClass("text-center");
+		$('.donate').toggle(1000);
+		$('.donate').css("display","block");
+	});
+	$('#contact').click(function(){
+		$('#contact').addClass("text-center");
+		$('.contact').toggle(1000);
+		$('.contact').css("display","block");
+	});
+</script>
+</body>
+</html>
