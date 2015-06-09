@@ -41,7 +41,7 @@ def message(request,chatid):
 def add_chat(request):
 	if request.method == "POST":
 		channel = str(request.POST.get('ChatName'))
-		encoded = int(hashlib.sha1(channel).hexdigest(), 16) % (10 ** 8)
+		encoded = int(hashlib.sha1(channel).hexdigest(), 16) % (10 ** 14)
 		encoded = str(encoded)
 		ChatRoom.objects.create(chat_id=encoded,chat_name=channel,username="Administrator",message="Welcome to "+channel,online_users="Administrator")
 		return HttpResponseRedirect("/chat/"+encoded+"/")
@@ -66,12 +66,19 @@ def chat(request,chatid):
 def changeuser(request,chatid):
 	chat_user = request.session['username']
 	if request.GET:
+		chat_room = ChatRoom.objects.all().filter(chat_id = chatid).latest('time')
+		if chat_room.online_users.find(","+chat_user):
+			chat_room.online_users = chat_room.online_users.replace(","+chat_user, "");
+			print "Yes"
+		else :
+			chat_room.online_users = chat_room.online_users.replace(chat_user, "");
+			print "YEs"
 		name = request.GET.get('user')
 		s = SessionStore(session_key=request.session.session_key)
 		print s.session_key
 		s['username'] = str(name)
 		s.save()
-		chat_room = ChatRoom.objects.all().filter(chat_id = chatid).latest('time')
+		chat_room.save()
 		chat_name = chat_room.chat_name
 		notification = "Username "+ str(chat_user) + " has changed name to " + str(name)
 		ChatRoom.objects.create(chat_id=chatid,chat_name=chat_name,username="Administrator",message=notification,online_users=chat_room.online_users)

@@ -11,7 +11,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
 <script>
 var chatid = {{chat_room.chat_id}};
-function LoadJson(){ //start function
+function LoadMessages(){ //start function
 	$.getJSON( "/message/"+chatid, function( data ) {
 		var items = [];
 		var lastitem = parseInt($("#showdata div:last-child").attr("id"));
@@ -36,7 +36,7 @@ function LoadJson(){ //start function
 			};
 		});
 	});
-    setTimeout(LoadJson, 5000);
+    setTimeout(LoadMessages, 5000);
 };
 function postAjax(){
     $.ajax({
@@ -47,7 +47,7 @@ function postAjax(){
                text: $('#send').val() // from form
                },
         success: function(){
-            LoadJson();
+            LoadMessages();
             $('#send').val('')
         }
     });
@@ -56,7 +56,7 @@ function postAjax(){
 $(document).ready(function(){
 	$('#bottom').scrollTop($('#bottom').prop("scrollHeight"));
 	$(window).scrollTop($(document).height());
-	LoadJson();
+	LoadMessages();
 	$(window).bind('beforeunload', function() {
     console.log("lalala")
 	});
