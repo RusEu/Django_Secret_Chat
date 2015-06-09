@@ -69,7 +69,7 @@ $(document).ready(function(){
 					<div class="panel panel-heading text-center">
 						<h4>{{chat_room.usernames | length}} Users Online</h4>
 					</div>
-					<div class="panel panel-body" style="height:17em;overflow:auto;padding:10px;">
+					<div class="panel panel-body" style="height:17em;overflow:scroll;padding:10px;">
 						<table class="table">
 							{%for item in chat_room.usernames %}
 							<h4 class="text-center" style="border-bottom: 2px dotted #ECF0F1;margin-top:30px;">
@@ -79,11 +79,11 @@ $(document).ready(function(){
 						</table>
 					</div>
 					<div class"panel panel-footer">
-						<form role="search">
+						<form action="/changeuser/{{chat_room.chat_id}}/" method="GET" role="changeUsername">						{%csrf_token%}
 							<div class="input-group">
-								<input type="text" class="form-control" placeholder="Change Username">
+								<input type="text" name="user" class="form-control" placeholder="Change Username">
 								<span class="input-group-btn">
-									<button class="btn btn-default" type="button">Go!</button>
+									<button class="btn btn-default" type="submit">Go!</button>
 								</span>
 							</div>
 						</form>
