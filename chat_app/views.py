@@ -75,6 +75,7 @@ def add_chat(request):
 		encoded = int(hashlib.sha1(channel).hexdigest(), 16) % (10 ** 14)
 		encoded = str(encoded)
 		ChatRoom.objects.create(chat_id=encoded,chat_name=channel,username="Administrator",message="Welcome to "+channel,online_users="Administrator")
+		ChatRoom.objects.create(chat_id=encoded,chat_name=channel,username="Administrator",message="Share this link with your friends: http://127.0.0.1:8000/chat/"+encoded+"/",online_users="Administrator")
 		return HttpResponseRedirect("/chat/"+encoded+"/")
 	else:
 		return HttpResponse("Nothing")

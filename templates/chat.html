@@ -21,13 +21,14 @@ function LoadUsers(){ //start function
 		}
 		$.each( data, function( key, val ) {
 			if ( key > lastitem ) {
+				$("#length").append(data.length);
 				$("#usernames").append("<div class='user' id='" + key + "'>"+"<h4 class='text-center' style='border-bottom: 2px dotted #ECF0F1;margin-top:30px;'><a>" + val.online_users + "</a></h4></div>");
 				$('#bottom').scrollTop($('#bottom').prop("scrollHeight"));
 				$(window).scrollTop($(document).height());
 			};
 		});
 	});
-    setTimeout(LoadUsers, 5000);
+    setTimeout(LoadUsers, 3000);
 };
 function LoadMessages(){ //start function
 	$.getJSON( "/message/"+chatid, function( data ) {
@@ -47,7 +48,7 @@ function LoadMessages(){ //start function
 					$("#showdata").append("<div class='row message' id='" + key + "'>"+"<p><span class='col-md-3 col-xs-4'>"+val.user+"</span>" + "<span class='col-md-7 col-xs-8'>" + newVal + "</span><small class='col-md-2 col-xs-12 text-right'>"+ val.time + "</small></p></div>");
 				}
 				else {
-					$("#showdata").append("<div class='row message' id='" + key + "'>"+"<p><span class='col-md-3 col-xs-4'>"+val.user+"</span>" + "<span class='col-md-7 col-xs-8'>" + val.msg + "</span><small class='col-md-2 col-xs-12 text-right'>"+ val.time + "</small></p></div>");
+					$("#showdata").append("<div class='row message' id='" + key + "'>"+"<p><span class='col-md-3 col-xs-4'>"+val.user+"</span>" + "<span class='col-md-7 col-xs-8'>" + str + "</span><small class='col-md-2 col-xs-12 text-right'>"+ val.time + "</small></p></div>");
 				}
 				$('#bottom').scrollTop($('#bottom').prop("scrollHeight"));
 				$(window).scrollTop($(document).height());
@@ -88,7 +89,7 @@ $(document).ready(function(){
 			<div class="col-md-3">
 				<div class="panel panel-info">
 					<div class="panel panel-heading text-center">
-						<h4>{{chat_room.usernames | length}} Users Online</h4>
+						<h4><strong id="length"></strong> Users Online</h4>
 					</div>
 					<div class="panel panel-body" style="height:17em;overflow:scroll;padding:10px;">
 						<table class="table" id="usernames">
@@ -98,7 +99,7 @@ $(document).ready(function(){
 					<div class"panel panel-footer">
 						<form action="/changeuser/{{chat_room.chat_id}}/" method="GET" role="changeUsername">						{%csrf_token%}
 							<div class="input-group">
-								<input type="text" name="user" class="form-control" placeholder="Change Username">
+								<input type="text" maxlength="8" name="user" class="form-control" placeholder="Change Username">
 								<span class="input-group-btn">
 									<button class="btn btn-default" type="submit">Go!</button>
 								</span>
