@@ -24,5 +24,6 @@ urlpatterns = [
     url(ur'^changeuser/(?P<chatid>.*)/$', views.changeuser, name='changeuser'),
     url(ur'^delete/(?P<chatid>.*)/$', views.delete_chat, name='delete'),
     url(r'^message/(?P<chatid>.*)$', views.message, name='message'),
+    url(r'^userlist/(?P<chatid>.*)$', views.user_list, name='user_list'),
     url(r'^admin/', include(admin.site.urls)),
 ]
