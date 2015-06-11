@@ -19,11 +19,11 @@ def chat(request,chatid):
 		chat_user = request.session['username']
 	chat_user = request.session['username']
 	chat_room = ChatRoom.objects.all().filter(chat_id = chatid).latest('time')
-	messages = ChatRoom.objects.all().filter(chat_id=chatid)
+	if chat_user not in chat_room.online_users :
+		users_online = str(chat_room.online_users)+","+str(chat_user)
+		welcome = ChatRoom.objects.create(chat_id=chatid,chat_name=chat_room.chat_name,username=request.session['username'],message="I've just entered the chat room",online_users=users_online)
 	context = {
-		"chat_user": chat_user,
 		"chat_room":chat_room,
-		"messages":messages,
 	}
 	return render_to_response("chat.html",context,context_instance=RequestContext(request))
 
@@ -51,19 +51,21 @@ def message(request,chatid):
 
 def user_list(request,chatid):
 	chat = ChatRoom.objects.all().filter(chat_id=chatid).latest('time')
-	print chat.username,len(chat.username)
+	chat_name = chat.chat_name
+	chat_user = request.session['username']
 	res = []
 	for word in chat.online_users.split(','):
 		res.append({'online_users':word})
 	data = json.dumps(res)	
 	if request.method == "POST":
-		users_online = chat.online_users
-		leftchat = request.POST.get('leftchat')
-		if leftchat:
-			chat_room.online_users = chat_room.online_users.replace(","+chat_user, "");
-			chat_room.save()
-			print "Yes"
-		last_message_chat = ChatRoom.objects.create(chat_id=chatid,chat_name=chat_name,username=chat_user,message=text,online_users=users_online)
+		user_left_chat = request.POST.get('leftchat')
+		if user_left_chat:
+			users_online = chat.online_users.replace(","+chat_user, "")
+			chat.online_users = chat.online_users.replace(","+chat_user, "");
+			chat.save()
+			print users_online
+			last_message_chat = ChatRoom.objects.create(chat_id=chatid,chat_name=chat_name,username="Administrator",message="User <strong id='leftchat'>"+user_left_chat+"</strong> has left chat",online_users=users_online)
+			print last_message_chat.online_users
 	context={
 		"chat":chat,
 	}
@@ -75,7 +77,7 @@ def add_chat(request):
 		encoded = int(hashlib.sha1(channel).hexdigest(), 16) % (10 ** 14)
 		encoded = str(encoded)
 		ChatRoom.objects.create(chat_id=encoded,chat_name=channel,username="Administrator",message="Welcome to "+channel,online_users="Administrator")
-		ChatRoom.objects.create(chat_id=encoded,chat_name=channel,username="Administrator",message="Share this link with your friends: http://127.0.0.1:8000/chat/"+encoded+"/",online_users="Administrator")
+		ChatRoom.objects.create(chat_id=encoded,chat_name=channel,username="Administrator",message="Share this link with your friends: <br><a>http://127.0.0.1:8000/chat/"+encoded+"/</a>",online_users="Administrator")
 		return HttpResponseRedirect("/chat/"+encoded+"/")
 	else:
 		return HttpResponse("Nothing")
@@ -87,10 +89,8 @@ def changeuser(request,chatid):
 		if request.GET.get('user') not in chat_room.online_users :
 			if chat_room.online_users.find(","+chat_user):
 				chat_room.online_users = chat_room.online_users.replace(","+chat_user, "");
-				print "Yes"
 			else :
 				chat_room.online_users = chat_room.online_users.replace(chat_user, "");
-				print "YEs"
 			name = request.GET.get('user')
 			request.session['username'] = str(name)
 			chat_room.save()

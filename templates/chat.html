@@ -12,6 +12,9 @@
 <script>
 var leftchat = true;
 var chatid = {{chat_room.chat_id}};
+var current_user = "{{request.session.username}}";
+var user_left_chat = false;
+
 function LoadUsers(){ //start function
 	$.getJSON( "/userlist/"+chatid, function( data ) {
 		var items = [];
@@ -20,13 +23,18 @@ function LoadUsers(){ //start function
 			var lastitem = 0;
 		}
 		$.each( data, function( key, val ) {
-			if ( key > lastitem ) {
-				$("#length").append(data.length);
-				$("#usernames").append("<div class='user' id='" + key + "'>"+"<h4 class='text-center' style='border-bottom: 2px dotted #ECF0F1;margin-top:30px;'><a>" + val.online_users + "</a></h4></div>");
+			$("."+user_left_chat).remove();
+			if ( $("."+val.online_users).length == 0 ){
+				$("#usernames").append("<div class='"+val.online_users+"' id='" + key + "'>"+"<h4 class='text-center' style='border-bottom: 2px dotted #ECF0F1;margin-top:30px;'><a>" + val.online_users + "</a></h4></div>");
 				$('#bottom').scrollTop($('#bottom').prop("scrollHeight"));
-				$(window).scrollTop($(document).height());
-			};
+				$(window).scrollTop($(document).height());	
+			}
+			$("#length").text(data.length);
 		});
+		if ( data.length <= 2) {
+			$("#deletechat").attr("href","/delete/{{chat_room.chat_id}}")
+			$("#deletechat").text("DeleteChat")
+		}
 	});
     setTimeout(LoadUsers, 3000);
 };
@@ -41,6 +49,10 @@ function LoadMessages(){ //start function
 			if (val.msg) {
 				var str = val.msg;
 			    var search = str.search(" ")
+			    if ('' != $("#showdata #leftchat").last().text()){
+			    	if ( $("#showdata #leftchat").last().text() != user_left_chat )
+			    		user_left_chat = $("#showdata #leftchat").last().text()
+			    }
 			}
 			if ( key > lastitem ) {
 		    	if ( (search == -1) || (search > 30) ) {
@@ -57,7 +69,7 @@ function LoadMessages(){ //start function
 	});
     setTimeout(LoadMessages, 5000);
 };
-function postAjax(){
+function postMessage(){
     $.ajax({
         type:"POST",
         url:"/message/"+chatid,
@@ -71,16 +83,25 @@ function postAjax(){
         }
     });
     return false; //<---- move it here
-}
+};
 $(document).ready(function(){
 	$('#bottom').scrollTop($('#bottom').prop("scrollHeight"));
 	$(window).scrollTop($(document).height());
 	LoadMessages();
 	LoadUsers();
 	$(window).bind('beforeunload', function() {
-    if (leftchat == true){
-    	console.log("lalala")
-    	}
+	    $.ajax({
+	        type:"POST",
+	        url:"/userlist/"+chatid,
+	        data: {
+	               csrfmiddlewaretoken : "{{csrf_token}}",
+	               leftchat: current_user, // from form
+	               },
+	        success: function(){
+	        	LoadUsers();
+	        }
+	    });
+	    return false; //<---- move it here
 	});
 }); 
 </script>
@@ -113,9 +134,7 @@ $(document).ready(function(){
 					<div class="panel-heading text-center">
 						<h4>Welcome to {{chat_room.chat_name}}
 							<strong class="pull-right">
-        						{% ifequal chat_room.usernames|length 2 %}
-   									<a href="/delete/{{chat_room.chat_id}}">DeleteChat</a>
-								{%endifequal%}
+								<a id="deletechat"></a>
 							</strong>
 						</h4>
 					</div>
@@ -127,7 +146,7 @@ $(document).ready(function(){
 							<div class="input-group" style="position:absolute;bottom:0;left:0px;">
 						  		<input type="text" autocomplete="off" name="send" id="send" class="form-control" placeholder="Enter Message">
 						  		<span class="input-group-btn">
-						    		<button class="btn btn-default" onclick="postAjax()">Send</button>
+						    		<button class="btn btn-default" onclick="postMessage()">Send</button>
 						  		</span>
 							</div>
 						</form>
